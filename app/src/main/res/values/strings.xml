@@ -1,0 +1,22 @@
+<resources>
+    <string name="app_name">Mobile</string>
+    <string name="heart_rate">Heart Rate</string>
+    <string name="oxygen_level">Oxygen Level</string>
+    <string name="temperature">Temperature</string>
+    <string name="stress_level">Stress Level</string>
+    <string name="battery_level">Battery Level</string>
+    <string name="device_connected">Device Connected</string>
+    <string name="device_disconnected">Device Disconnected</string>
+    <string name="active_exercise">Active Exercise</string>
+    <string name="resting">Resting</string>
+    <string name="recent_activity">Recent Activity</string>
+    <string name="settings">Settings</string>
+    <string name="bpm">BPM</string>
+    <string name="spo2">SpO2</string>
+    <string name="celsius">°C</string>
+    <string name="percent">%</string>
+    <string name="high_intensity_detected">High intensity detected</string>
+    <string name="low_activity_level">Low activity level</string>
+    <string name="smart_headband_model">SH-001</string>
+    <string name="device_model">Smart Headband</string>
+</resources>
