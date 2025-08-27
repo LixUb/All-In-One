@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kavlo-Smart Headband</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-content">
+            <div class="logo">KAVLO</div>
+            <ul class="nav-links" id="navLinks">
+                <li><a href="#home">Home</a></li>
+                <li><a href="#features">Features</a></li>
+                <li><a href="#specs">Specs</a></li>
+                <li><a href="#download">Download</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
+            <div class="hamburger" onclick="toggleMenu()">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <div class="floating-particles" id="particles"></div>
+
+    <section class="hero" id="home">
+        <div class="hero-content">
+            <div class="hero-text">
+                <h1>Next-Gen Sport Assisten Technology</h1>
+                <p>Exercising isn’t just about moving it’s about taking care of your body in a smarter way. Kavlo is an innovative smart headband designed to help everyone track their health in real time during workouts and physical activities.</p>
+                <div class="cta-buttons">
+                    <a href="#download" class="btn-primary">Get the App</a>
+                    <a href="#features" class="btn-secondary">Learn More</a>
+                </div>
+            </div>
+            <div class="model-container">
+                <div id="threejs-container">
+                    <div class="loading" id="loading">Loading 3D Model...</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="features" id="features">
+        <h2>Revolutionary Features</h2>
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">🧠</div>
+                <h3>Multi-Sensor Health Tracking</h3>
+                <p>Integrated with five advanced sensors, Heart Rate (PPG), Skin Temperature, Galvanic Skin Response (GSR), Accelerometer & Gyroscope, and Pulse Oximeter (SpO₂)</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">💤</div>
+                <h3>AI-Powered Fatigue Analyzer</h3>
+                <p>With real-time AI analysis, Kavlo detects signs of overexertion and alerts you before reaching dangerous levels, ensuring safer workouts for everyone.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🎯</div>
+                <h3>Inclusive Assistive Alerts</h3>
+                <p>Kavlo uses a gentle vibration system to notify users when it’s time to slow down or stop, making it highly accessible for people with disabilities, pregnant women, and beginners.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">📱</div>
+                <h3>Personalized Insights via Mobile App</h3>
+                <p>Data is seamlessly synced with the Kavlo Mobile App, designed with inclusive UI/UX for easy use. It offers real-time dashboards, personalized recommendations, and secure sharing with trainers, doctors, or caregivers.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🔋</div>
+                <h3>All-Day Battery</h3>
+                <p>Ultra-efficient power management provides 12+ hours of continuous monitoring. Fast wireless charging gets you back to 100% in just 2 hours.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🛡️</div>
+                <h3>Posture and Balance Monitoring</h3>
+                <p>The built-in accelerometer and gyroscope help detect unstable movements or poor posture, reducing the risk of injuries, especially for users with neurological or physical conditions.</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="download-section" id="download">
+        <div class="download-content">
+            <h2>Download KAVLO Mobile App</h2>
+            <p>
+                `
+            </p>
+            <p>Get the most out of your KAVLO Mobile App with our companion mobile apps. Available now for iOS and Android with full feature synchronization.</p>
+            
+            <div class="download-apps">
+                <a href="#" class="app-download" onclick="downloadApp('ios')">
+                    <div class="app-icon">🍎</div>
+                    <div>
+                        <div style="font-size: 0.9rem; opacity: 0.8;">Download for</div>
+                        <div style="font-size: 1.2rem; font-weight: bold;">iOS</div>
+                    </div>
+                </a>
+                <a href="#" class="app-download" onclick="downloadApp('android')">
+                    <div class="app-icon">🤖</div>
+                    <div>
+                        <div style="font-size: 0.9rem; opacity: 0.8;">Get it on</div>
+                        <div style="font-size: 1.2rem; font-weight: bold;">Android</div>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <section class="specs" id="specs">
+        <h2 style="text-align: center; font-size: 3rem; margin-bottom: 2rem;">Technical Specifications</h2>
+        <div class="specs-grid">
+            <div class="spec-item">
+                <div class="spec-number">5</div>
+                <div>Sensors</div>
+            </div>
+            <div class="spec-item">
+                <div class="spec-number">1000Hz</div>
+                <div>Sampling Rate</div>
+            </div>
+            <div class="spec-item">
+                <div class="spec-number">12h</div>
+                <div>Battery Life</div>
+            </div>
+            <div class="spec-item">
+                <div class="spec-number">45g</div>
+                <div>Weight</div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer" id="contact">
+        <h3 style="margin-bottom: 1rem;">Ready to Transform Your Activity?</h3>
+        <p style="margin-bottom: 2rem; opacity: 0.8;">Join users who are already enhancing their cognitive performance with KAVLO SmartHeadband.</p>
+        <div style="margin-bottom: 2rem;">
+            <a href="#download" class="btn-primary">Order Now - $99</a>
+        </div>
+        <p style="opacity: 0.6;">&copy; 2025 Kalma Team. All rights reserved.</p>
+    </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
