@@ -3,6 +3,7 @@ package kavlo.sft.mobile
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
@@ -264,12 +265,13 @@ fun SmartHeadbandApp(esp32Service: ESP32BluetoothService) {
     val connectionStatus by esp32Service.connectionStatus.collectAsState()
     val errorMessage by esp32Service.errorMessage.collectAsState()
 
-    // Show error messages
+    val context = LocalContext.current
     LaunchedEffect(errorMessage) {
         errorMessage?.let { error ->
-            Toast.makeText(this@MainActivity, error, Toast.LENGTH_LONG).show()
+            Toast.makeText(context, error, Toast.LENGTH_LONG).show()
         }
     }
+
 
     val items = listOf(
         NavigationItem.Home,
@@ -326,12 +328,12 @@ fun SmartHeadbandApp(esp32Service: ESP32BluetoothService) {
             when (selectedItem) {
                 0 -> HomeScreen(
                     isConnected = connectionStatus,
-                    heartRate = sensorData.heartRate,
-                    oxygenLevel = sensorData.oxygenLevel,
-                    isActiveActivity = sensorData.heartRate > 100,
-                    temperature = sensorData.temperature,
-                    stressLevel = sensorData.stressLevel,
-                    batteryLevel = sensorData.batteryLevel,
+                    heartRate = if (connectionStatus) sensorData.heartRate else -1,
+                    oxygenLevel = if (connectionStatus) sensorData.oxygenLevel else -1,
+                    isActiveActivity = connectionStatus && sensorData.heartRate > 100,
+                    temperature = if (connectionStatus) sensorData.temperature else Float.NaN,
+                    stressLevel = if (connectionStatus) sensorData.stressLevel else 0,
+                    batteryLevel = if (connectionStatus) sensorData.batteryLevel else -1,
                     theme = selectedTheme
                 )
                 1 -> ProfileScreen(
@@ -415,7 +417,7 @@ fun HomeScreen(
                     horizontalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
                     HeartRateCard(
-                        heartRate = heartRate,
+                        heartRate = if (isConnected) heartRate else -1,
                         theme = theme,
                         modifier = Modifier.weight(1f)
                     )
@@ -1163,7 +1165,7 @@ fun HeartRateCard(heartRate: Int, theme: AppTheme, modifier: Modifier = Modifier
             )
             Spacer(modifier = Modifier.height(8.dp))
             Text(
-                text = "$heartRate",
+                text = if (heartRate >= 0) "$heartRate" else "--",   // <-- tampilkan "--" saat disconnect
                 fontSize = 24.sp,
                 fontWeight = FontWeight.Bold,
                 color = theme.textColor
@@ -1174,10 +1176,14 @@ fun HeartRateCard(heartRate: Int, theme: AppTheme, modifier: Modifier = Modifier
                 color = Color.Gray
             )
             Spacer(modifier = Modifier.height(8.dp))
-            HeartRateWave(heartRate = heartRate, theme = theme)
+
+            if (heartRate >= 0) { // <-- wave cuma jalan kalau ada data
+                HeartRateWave(heartRate = heartRate, theme = theme)
+            }
         }
     }
 }
+
 
 @Composable
 fun HeartRateWave(heartRate: Int, theme: AppTheme) {
@@ -1234,7 +1240,7 @@ fun OxygenCard(oxygenLevel: Int, theme: AppTheme, modifier: Modifier = Modifier)
             )
             Spacer(modifier = Modifier.height(8.dp))
             Text(
-                text = "$oxygenLevel%",
+                text = if (oxygenLevel >= 0) "$oxygenLevel%" else "--",   // <-- tampilkan "--"
                 fontSize = 24.sp,
                 fontWeight = FontWeight.Bold,
                 color = theme.textColor
@@ -1245,12 +1251,15 @@ fun OxygenCard(oxygenLevel: Int, theme: AppTheme, modifier: Modifier = Modifier)
                 color = Color.Gray
             )
             Spacer(modifier = Modifier.height(8.dp))
-            CircularProgressIndicator(
-                progress = { oxygenLevel / 100f },
-                modifier = Modifier.size(40.dp),
-                color = theme.secondaryColor,
-                strokeWidth = 4.dp
-            )
+
+            if (oxygenLevel >= 0) { // <-- jangan tampilkan progress bar saat disconnect
+                CircularProgressIndicator(
+                    progress = oxygenLevel / 100f,
+                    modifier = Modifier.size(40.dp),
+                    color = theme.secondaryColor,
+                    strokeWidth = 4.dp
+                )
+            }
         }
     }
 }
@@ -1295,7 +1304,7 @@ fun ActivityCard(isActive: Boolean, theme: AppTheme, modifier: Modifier = Modifi
 @Composable
 fun MetricCard(
     title: String,
-    value: String,
+    value: String,    // <-- tetap String
     icon: ImageVector,
     color: Color,
     theme: AppTheme,
@@ -1320,7 +1329,7 @@ fun MetricCard(
             )
             Spacer(modifier = Modifier.height(8.dp))
             Text(
-                text = value,
+                text = value,   // <-- bisa angka atau "--"
                 fontSize = 20.sp,
                 fontWeight = FontWeight.Bold,
                 color = theme.textColor
@@ -1351,6 +1360,7 @@ fun BatteryCard(batteryLevel: Int, theme: AppTheme, modifier: Modifier = Modifie
                 Icons.Default.Battery6Bar,
                 contentDescription = null,
                 tint = when {
+                    batteryLevel < 0 -> Color.Gray                 // <-- abu-abu kalau disconnect
                     batteryLevel > 50 -> Color(0xFF4CAF50)
                     batteryLevel > 20 -> theme.accentColor
                     else -> theme.primaryColor
@@ -1359,7 +1369,7 @@ fun BatteryCard(batteryLevel: Int, theme: AppTheme, modifier: Modifier = Modifie
             )
             Spacer(modifier = Modifier.height(8.dp))
             Text(
-                text = "$batteryLevel%",
+                text = if (batteryLevel >= 0) "$batteryLevel%" else "--",   // <-- tampilkan "--"
                 fontSize = 20.sp,
                 fontWeight = FontWeight.Bold,
                 color = theme.textColor
@@ -1412,6 +1422,5 @@ fun DeviceInfoCard(theme: AppTheme, modifier: Modifier = Modifier) {
 @Composable
 fun SmartHeadbandAppPreview() {
     SmartHeadbandTheme {
-        // Preview tanpa ESP32Service untuk testing UI
     }
 }
