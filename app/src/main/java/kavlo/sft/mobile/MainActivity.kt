@@ -22,19 +22,23 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.blur
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.*
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kavlo.sft.mobile.ui.theme.SmartHeadbandTheme
 import kotlinx.coroutines.delay
 import kotlin.math.sin
+import kotlin.math.cos
 import kotlin.random.Random
 import kavlo.sft.mobile.service.ESP32BluetoothService
 import kavlo.sft.mobile.data.SensorData
@@ -56,8 +60,7 @@ class MainActivity : ComponentActivity() {
     ) { permissions ->
         val allPermissionsGranted = permissions.values.all { it }
         if (allPermissionsGranted) {
-            // Semua permission diberikan, coba connect
-            esp32Service.connectToDevice("XX:XX:XX:XX:XX:XX") // Ganti dengan MAC address ESP32 yang benar
+            esp32Service.connectToDevice("XX:XX:XX:XX:XX:XX")
         } else {
             Toast.makeText(this, "Bluetooth permissions required for device connection", Toast.LENGTH_LONG).show()
         }
@@ -68,7 +71,6 @@ class MainActivity : ComponentActivity() {
         ActivityResultContracts.StartActivityForResult()
     ) { result ->
         if (result.resultCode == RESULT_OK) {
-            // Bluetooth enabled, request permissions
             requestBluetoothPermissions()
         } else {
             Toast.makeText(this, "Bluetooth is required for device connection", Toast.LENGTH_LONG).show()
@@ -90,7 +92,6 @@ class MainActivity : ComponentActivity() {
             }
         }
 
-        // Check dan request permissions saat app start
         checkAndRequestPermissions()
     }
 
@@ -100,14 +101,12 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun checkAndRequestPermissions() {
-        // Check apakah Bluetooth adapter tersedia
         val bluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
         if (bluetoothAdapter == null) {
             Toast.makeText(this, "Bluetooth not supported on this device", Toast.LENGTH_LONG).show()
             return
         }
 
-        // Check apakah Bluetooth enabled
         if (!bluetoothAdapter.isEnabled) {
             val enableBtIntent = Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE)
             enableBluetoothLauncher.launch(enableBtIntent)
@@ -138,13 +137,12 @@ class MainActivity : ComponentActivity() {
         if (permissionsToRequest.isNotEmpty()) {
             bluetoothPermissionLauncher.launch(permissionsToRequest.toTypedArray())
         } else {
-            // Semua permission sudah ada, coba connect
-            esp32Service.connectToDevice("XX:XX:XX:XX:XX:XX") // Ganti dengan MAC address ESP32 yang benar
+            esp32Service.connectToDevice("XX:XX:XX:XX:XX:XX")
         }
     }
 }
 
-// Theme Data Classes (sama seperti sebelumnya)
+// Enhanced Theme Data Classes with glassmorphism support
 data class AppTheme(
     val name: String,
     val primaryColor: Color,
@@ -152,69 +150,80 @@ data class AppTheme(
     val accentColor: Color,
     val backgroundColor: List<Color>,
     val cardColor: Color,
+    val surfaceColor: Color,
     val textColor: Color,
-    val icon: ImageVector
+    val textSecondary: Color,
+    val icon: ImageVector,
+    val isLight: Boolean = false
 )
 
 val availableThemes = listOf(
     AppTheme(
-        name = "Dark Blue",
-        primaryColor = Color(0xFFE94560),
-        secondaryColor = Color(0xFF4ECDC4),
-        accentColor = Color(0xFFFFD93D),
+        name = "Midnight Pro",
+        primaryColor = Color(0xFF6366F1),
+        secondaryColor = Color(0xFF06B6D4),
+        accentColor = Color(0xFF10B981),
         backgroundColor = listOf(
+            Color(0xFF0F0F23),
             Color(0xFF1A1A2E),
-            Color(0xFF16213E),
-            Color(0xFF0F3460)
+            Color(0xFF16213E)
         ),
         cardColor = Color(0xFF1E1E2E),
-        textColor = Color.White,
+        surfaceColor = Color(0xFF2A2A3E),
+        textColor = Color(0xFFF8FAFC),
+        textSecondary = Color(0xFF94A3B8),
         icon = Icons.Default.DarkMode
     ),
     AppTheme(
-        name = "Ocean",
-        primaryColor = Color(0xFF00D4AA),
-        secondaryColor = Color(0xFF4FC3F7),
-        accentColor = Color(0xFF26C6DA),
+        name = "Ocean Depth",
+        primaryColor = Color(0xFF0EA5E9),
+        secondaryColor = Color(0xFF06B6D4),
+        accentColor = Color(0xFF8B5CF6),
         backgroundColor = listOf(
-            Color(0xFF0D47A1),
-            Color(0xFF1565C0),
-            Color(0xFF1976D2)
+            Color(0xFF0C4A6E),
+            Color(0xFF075985),
+            Color(0xFF0369A1)
         ),
-        cardColor = Color(0xFF1E3A8A),
+        cardColor = Color(0xFF1E3A5F),
+        surfaceColor = Color(0xFF2A4A6F),
         textColor = Color.White,
+        textSecondary = Color(0xFF94A3B8),
         icon = Icons.Default.Water
     ),
     AppTheme(
-        name = "Sunset",
-        primaryColor = Color(0xFFFF6B35),
-        secondaryColor = Color(0xFFF7931E),
-        accentColor = Color(0xFFFFD23F),
+        name = "Sunset Glow",
+        primaryColor = Color(0xFFEF4444),
+        secondaryColor = Color(0xFFF59E0B),
+        accentColor = Color(0xFFEC4899),
         backgroundColor = listOf(
-            Color(0xFF8B5CF6),
-            Color(0xFFEC4899),
-            Color(0xFFEF4444)
+            Color(0xFF7C2D12),
+            Color(0xFF991B1B),
+            Color(0xFFBE123C)
         ),
         cardColor = Color(0xFF7C2D12),
+        surfaceColor = Color(0xFF8C3D22),
         textColor = Color.White,
+        textSecondary = Color(0xFFFEF3C7),
         icon = Icons.Default.WbSunny
     ),
     AppTheme(
-        name = "Forest",
-        primaryColor = Color(0xFF34D399),
-        secondaryColor = Color(0xFF10B981),
-        accentColor = Color(0xFF059669),
+        name = "Forest Deep",
+        primaryColor = Color(0xFF10B981),
+        secondaryColor = Color(0xFF059669),
+        accentColor = Color(0xFF34D399),
         backgroundColor = listOf(
             Color(0xFF064E3B),
             Color(0xFF065F46),
             Color(0xFF047857)
         ),
         cardColor = Color(0xFF1F2937),
+        surfaceColor = Color(0xFF2F3947),
         textColor = Color.White,
+        textSecondary = Color(0xFFD1FAE5),
         icon = Icons.Default.Forest
     ),
     AppTheme(
-        name = "Purple",
+        name = "Royal Purple",
         primaryColor = Color(0xFF8B5CF6),
         secondaryColor = Color(0xFFA855F7),
         accentColor = Color(0xFFC084FC),
@@ -223,23 +232,28 @@ val availableThemes = listOf(
             Color(0xFF6B21A8),
             Color(0xFF7C2D92)
         ),
-        cardColor = Color(0xFF312E81),
+        cardColor = Color(0xFF2E1065),
+        surfaceColor = Color(0xFF3E2075),
         textColor = Color.White,
+        textSecondary = Color(0xFFDDD6FE),
         icon = Icons.Default.ColorLens
     ),
     AppTheme(
-        name = "Light",
+        name = "Pure Light",
         primaryColor = Color(0xFF3B82F6),
-        secondaryColor = Color(0xFF10B981),
-        accentColor = Color(0xFFF59E0B),
+        secondaryColor = Color(0xFF06B6D4),
+        accentColor = Color(0xFF8B5CF6),
         backgroundColor = listOf(
-            Color(0xFFF8FAFC),
-            Color(0xFFF1F5F9),
-            Color(0xFFE2E8F0)
+            Color(0xFFFAFAFA),
+            Color(0xFFF5F5F5),
+            Color(0xFFE5E5E5)
         ),
-        cardColor = Color.White,
+        cardColor = Color(0xFFFFFFFF),
+        surfaceColor = Color(0xFFF8F9FA),
         textColor = Color(0xFF1E293B),
-        icon = Icons.Default.LightMode
+        textSecondary = Color(0xFF64748B),
+        icon = Icons.Default.LightMode,
+        isLight = true
     )
 )
 
@@ -260,7 +274,6 @@ fun SmartHeadbandApp(esp32Service: ESP32BluetoothService) {
     var userHeight by remember { mutableStateOf("175") }
     var userWeight by remember { mutableStateOf("70") }
 
-    // Collect data dari ESP32 service
     val sensorData by esp32Service.sensorData.collectAsState()
     val connectionStatus by esp32Service.connectionStatus.collectAsState()
     val errorMessage by esp32Service.errorMessage.collectAsState()
@@ -272,7 +285,6 @@ fun SmartHeadbandApp(esp32Service: ESP32BluetoothService) {
         }
     }
 
-
     val items = listOf(
         NavigationItem.Home,
         NavigationItem.Profile,
@@ -282,51 +294,27 @@ fun SmartHeadbandApp(esp32Service: ESP32BluetoothService) {
 
     Scaffold(
         bottomBar = {
-            NavigationBar(
-                containerColor = selectedTheme.cardColor.copy(alpha = 0.95f),
-                contentColor = selectedTheme.textColor
-            ) {
-                items.forEachIndexed { index, item ->
-                    NavigationBarItem(
-                        icon = {
-                            Icon(
-                                item.icon,
-                                contentDescription = item.title,
-                                tint = if (selectedItem == index) selectedTheme.primaryColor else Color.Gray
-                            )
-                        },
-                        label = {
-                            Text(
-                                item.title,
-                                color = if (selectedItem == index) selectedTheme.primaryColor else Color.Gray
-                            )
-                        },
-                        selected = selectedItem == index,
-                        onClick = { selectedItem = index },
-                        colors = NavigationBarItemDefaults.colors(
-                            selectedIconColor = selectedTheme.primaryColor,
-                            selectedTextColor = selectedTheme.primaryColor,
-                            unselectedIconColor = Color.Gray,
-                            unselectedTextColor = Color.Gray,
-                            indicatorColor = selectedTheme.primaryColor.copy(alpha = 0.2f)
-                        )
-                    )
-                }
-            }
+            ModernNavigationBar(
+                items = items,
+                selectedItem = selectedItem,
+                onItemSelected = { selectedItem = it },
+                theme = selectedTheme
+            )
         }
     ) { innerPadding ->
-        Column(
+        Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(innerPadding)
                 .background(
                     Brush.verticalGradient(
-                        colors = selectedTheme.backgroundColor
+                        colors = selectedTheme.backgroundColor,
+                        startY = 0f,
+                        endY = Float.POSITIVE_INFINITY
                     )
                 )
         ) {
             when (selectedItem) {
-                0 -> HomeScreen(
+                0 -> ModernHomeScreen(
                     isConnected = connectionStatus,
                     heartRate = if (connectionStatus) sensorData.heartRate else -1,
                     oxygenLevel = if (connectionStatus) sensorData.oxygenLevel else -1,
@@ -334,9 +322,10 @@ fun SmartHeadbandApp(esp32Service: ESP32BluetoothService) {
                     temperature = if (connectionStatus) sensorData.temperature else Float.NaN,
                     stressLevel = if (connectionStatus) sensorData.stressLevel else 0,
                     batteryLevel = if (connectionStatus) sensorData.batteryLevel else -1,
-                    theme = selectedTheme
+                    theme = selectedTheme,
+                    modifier = Modifier.padding(innerPadding)
                 )
-                1 -> ProfileScreen(
+                1 -> ModernProfileScreen(
                     userName = userName,
                     userAge = userAge,
                     userHeight = userHeight,
@@ -345,22 +334,120 @@ fun SmartHeadbandApp(esp32Service: ESP32BluetoothService) {
                     onAgeChange = { userAge = it },
                     onHeightChange = { userHeight = it },
                     onWeightChange = { userWeight = it },
-                    theme = selectedTheme
+                    theme = selectedTheme,
+                    modifier = Modifier.padding(innerPadding)
                 )
-                2 -> SettingsScreen(
+                2 -> ModernSettingsScreen(
                     selectedTheme = selectedTheme,
                     onThemeChange = { selectedTheme = it },
-                    theme = selectedTheme
+                    theme = selectedTheme,
+                    modifier = Modifier.padding(innerPadding)
                 )
-                3 -> HistoryScreen(theme = selectedTheme)
+                3 -> ModernHistoryScreen(
+                    theme = selectedTheme,
+                    modifier = Modifier.padding(innerPadding)
+                )
             }
+        }
+    }
+}
+
+@Composable
+fun ModernNavigationBar(
+    items: List<NavigationItem>,
+    selectedItem: Int,
+    onItemSelected: (Int) -> Unit,
+    theme: AppTheme
+) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = theme.cardColor.copy(alpha = 0.8f)
+        ),
+        shape = RoundedCornerShape(24.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 8.dp),
+            horizontalArrangement = Arrangement.SpaceEvenly
+        ) {
+            items.forEachIndexed { index, item ->
+                NavigationItem(
+                    icon = item.icon,
+                    title = item.title,
+                    isSelected = selectedItem == index,
+                    onClick = { onItemSelected(index) },
+                    theme = theme
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun NavigationItem(
+    icon: ImageVector,
+    title: String,
+    isSelected: Boolean,
+    onClick: () -> Unit,
+    theme: AppTheme
+) {
+    val animatedScale by animateFloatAsState(
+        targetValue = if (isSelected) 1.1f else 1f,
+        animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy)
+    )
+
+    val animatedAlpha by animateFloatAsState(
+        targetValue = if (isSelected) 1f else 0.6f,
+        animationSpec = tween(300)
+    )
+
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier
+            .clip(RoundedCornerShape(16.dp))
+            .clickable { onClick() }
+            .padding(12.dp)
+            .scale(animatedScale)
+    ) {
+        Box(
+            modifier = Modifier
+                .size(32.dp)
+                .background(
+                    if (isSelected) theme.primaryColor.copy(alpha = 0.2f) else Color.Transparent,
+                    CircleShape
+                ),
+            contentAlignment = Alignment.Center
+        ) {
+            Icon(
+                icon,
+                contentDescription = title,
+                tint = if (isSelected) theme.primaryColor else theme.textSecondary,
+                modifier = Modifier
+                    .size(20.dp)
+                    .graphicsLayer(alpha = animatedAlpha)
+            )
+        }
+
+        if (isSelected) {
+            Spacer(modifier = Modifier.height(4.dp))
+            Text(
+                text = title,
+                fontSize = 12.sp,
+                color = theme.primaryColor,
+                fontWeight = FontWeight.Medium
+            )
         }
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeScreen(
+fun ModernHomeScreen(
     isConnected: Boolean,
     heartRate: Int,
     oxygenLevel: Int,
@@ -368,60 +455,37 @@ fun HomeScreen(
     temperature: Float,
     stressLevel: Int,
     batteryLevel: Int,
-    theme: AppTheme
+    theme: AppTheme,
+    modifier: Modifier = Modifier
 ) {
     Column(
-        modifier = Modifier.fillMaxSize()
+        modifier = modifier.fillMaxSize()
     ) {
-        TopAppBar(
-            title = {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    Icon(
-                        Icons.Default.Favorite,
-                        contentDescription = null,
-                        tint = theme.primaryColor
-                    )
-                    Text(
-                        "KAVLO Mobile App",
-                        fontSize = 20.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = theme.textColor
-                    )
-                }
-            },
-            actions = {
-                ConnectionIndicator(isConnected = isConnected, theme = theme)
-                Spacer(modifier = Modifier.width(8.dp))
-                Text(
-                    text = if (isConnected) "Connected" else "Disconnected",
-                    fontSize = 12.sp,
-                    color = if (isConnected) Color(0xFF4CAF50) else Color(0xFFFF5722)
-                )
-            },
-            colors = TopAppBarDefaults.topAppBarColors(
-                containerColor = Color.Transparent
-            )
+        // Modern Header
+        ModernHeader(
+            title = "KAVLO",
+            subtitle = "Smart Health Monitoring",
+            isConnected = isConnected,
+            theme = theme
         )
 
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
-            contentPadding = PaddingValues(16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+            contentPadding = PaddingValues(horizontal = 20.dp, vertical = 16.dp),
+            verticalArrangement = Arrangement.spacedBy(20.dp)
         ) {
+            // Hero Cards
             item {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                    horizontalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
-                    HeartRateCard(
-                        heartRate = if (isConnected) heartRate else -1,
+                    ModernHeartRateCard(
+                        heartRate = heartRate,
                         theme = theme,
                         modifier = Modifier.weight(1f)
                     )
-                    OxygenCard(
+                    ModernOxygenCard(
                         oxygenLevel = oxygenLevel,
                         theme = theme,
                         modifier = Modifier.weight(1f)
@@ -429,51 +493,436 @@ fun HomeScreen(
                 }
             }
 
+            // Activity Status Card
             item {
-                ActivityCard(
+                ModernActivityCard(
                     isActive = isActiveActivity,
-                    theme = theme,
-                    modifier = Modifier.fillMaxWidth()
+                    heartRate = heartRate,
+                    theme = theme
                 )
             }
 
+            // Metrics Grid
             item {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
-                    MetricCard(
-                        title = "Temperature",
-                        value = "${String.format("%.1f", temperature)}°C",
-                        icon = Icons.Default.Thermostat,
-                        color = theme.primaryColor,
-                        theme = theme,
-                        modifier = Modifier.weight(1f)
-                    )
-                    MetricCard(
-                        title = "Stress Level",
-                        value = "$stressLevel%",
-                        icon = Icons.Default.Psychology,
-                        color = theme.secondaryColor,
-                        theme = theme,
-                        modifier = Modifier.weight(1f)
-                    )
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        ModernMetricCard(
+                            title = "Temperature",
+                            value = if (temperature.isNaN()) "--" else "${String.format("%.1f", temperature)}°C",
+                            icon = Icons.Default.Thermostat,
+                            color = Color(0xFFEF4444),
+                            theme = theme,
+                            modifier = Modifier.weight(1f)
+                        )
+                        ModernMetricCard(
+                            title = "Stress Level",
+                            value = if (stressLevel > 0) "$stressLevel%" else "--",
+                            icon = Icons.Default.Psychology,
+                            color = theme.accentColor,
+                            theme = theme,
+                            modifier = Modifier.weight(1f)
+                        )
+                    }
+
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        ModernBatteryCard(
+                            batteryLevel = batteryLevel,
+                            theme = theme,
+                            modifier = Modifier.weight(1f)
+                        )
+                        ModernDeviceCard(
+                            theme = theme,
+                            modifier = Modifier.weight(1f)
+                        )
+                    }
                 }
             }
+        }
+    }
+}
 
-            item {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(12.dp)
-                ) {
-                    BatteryCard(
-                        batteryLevel = batteryLevel,
-                        theme = theme,
-                        modifier = Modifier.weight(1f)
+@Composable
+fun ModernHeader(
+    title: String,
+    subtitle: String,
+    isConnected: Boolean,
+    theme: AppTheme
+) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(20.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = theme.cardColor.copy(alpha = 0.7f)
+        ),
+        shape = RoundedCornerShape(24.dp)
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(
+                    Brush.horizontalGradient(
+                        colors = listOf(
+                            theme.primaryColor.copy(alpha = 0.1f),
+                            theme.secondaryColor.copy(alpha = 0.1f)
+                        )
                     )
-                    DeviceInfoCard(
-                        theme = theme,
-                        modifier = Modifier.weight(1f)
+                )
+        ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(20.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Column {
+                    Text(
+                        text = title,
+                        fontSize = 28.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = theme.textColor
+                    )
+                    Text(
+                        text = subtitle,
+                        fontSize = 14.sp,
+                        color = theme.textSecondary
+                    )
+                }
+
+                ModernConnectionStatus(
+                    isConnected = isConnected,
+                    theme = theme
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun ModernConnectionStatus(
+    isConnected: Boolean,
+    theme: AppTheme
+) {
+    val infiniteTransition = rememberInfiniteTransition(label = "pulse")
+    val pulseScale by infiniteTransition.animateFloat(
+        initialValue = 0.8f,
+        targetValue = 1.2f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(1000),
+            repeatMode = RepeatMode.Reverse
+        ),
+        label = "pulse"
+    )
+
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        Box(
+            modifier = Modifier
+                .size(12.dp)
+                .scale(if (isConnected) pulseScale else 1f)
+                .background(
+                    if (isConnected) Color(0xFF10B981) else Color(0xFFEF4444),
+                    CircleShape
+                )
+        )
+        Text(
+            text = if (isConnected) "Connected" else "Disconnected",
+            fontSize = 12.sp,
+            fontWeight = FontWeight.Medium,
+            color = if (isConnected) Color(0xFF10B981) else Color(0xFFEF4444)
+        )
+    }
+}
+
+@Composable
+fun ModernHeartRateCard(
+    heartRate: Int,
+    theme: AppTheme,
+    modifier: Modifier = Modifier
+) {
+    Card(
+        modifier = modifier.aspectRatio(1f),
+        colors = CardDefaults.cardColors(
+            containerColor = theme.cardColor.copy(alpha = 0.8f)
+        ),
+        shape = RoundedCornerShape(20.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+    ) {
+        Box(
+            modifier = Modifier.fillMaxSize()
+        ) {
+            // Gradient background
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(
+                        Brush.radialGradient(
+                            colors = listOf(
+                                theme.primaryColor.copy(alpha = 0.2f),
+                                Color.Transparent
+                            ),
+                            radius = 150f
+                        )
+                    )
+            )
+
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                Icon(
+                    Icons.Default.Favorite,
+                    contentDescription = null,
+                    tint = theme.primaryColor,
+                    modifier = Modifier.size(32.dp)
+                )
+
+                Spacer(modifier = Modifier.height(12.dp))
+
+                Text(
+                    text = if (heartRate >= 0) heartRate.toString() else "--",
+                    fontSize = 32.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = theme.textColor
+                )
+
+                Text(
+                    text = "BPM",
+                    fontSize = 14.sp,
+                    color = theme.textSecondary,
+                    fontWeight = FontWeight.Medium
+                )
+
+                if (heartRate >= 0) {
+                    Spacer(modifier = Modifier.height(8.dp))
+                    ModernHeartWave(theme = theme)
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun ModernHeartWave(theme: AppTheme) {
+    val infiniteTransition = rememberInfiniteTransition(label = "heartwave")
+    val phase by infiniteTransition.animateFloat(
+        initialValue = 0f,
+        targetValue = 2f * Math.PI.toFloat(),
+        animationSpec = infiniteRepeatable(
+            animation = tween(1200),
+            repeatMode = RepeatMode.Restart
+        ),
+        label = "phase"
+    )
+
+    Canvas(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(24.dp)
+    ) {
+        val width = size.width
+        val height = size.height
+        val centerY = height / 2
+
+        val path = Path()
+        for (i in 0 until width.toInt() step 2) {
+            val x = i.toFloat()
+            val normalizedX = x / width
+            val y = centerY + sin(phase + normalizedX * 4 * Math.PI) * (height * 0.3f)
+
+            if (i == 0) path.moveTo(x, y.toFloat())
+            else path.lineTo(x, y.toFloat())
+        }
+
+        drawPath(
+            path = path,
+            color = theme.primaryColor,
+            style = Stroke(width = 2.dp.toPx(), cap = StrokeCap.Round)
+        )
+    }
+}
+
+@Composable
+fun ModernOxygenCard(
+    oxygenLevel: Int,
+    theme: AppTheme,
+    modifier: Modifier = Modifier
+) {
+    Card(
+        modifier = modifier.aspectRatio(1f),
+        colors = CardDefaults.cardColors(
+            containerColor = theme.cardColor.copy(alpha = 0.8f)
+        ),
+        shape = RoundedCornerShape(20.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+    ) {
+        Box(
+            modifier = Modifier.fillMaxSize()
+        ) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(
+                        Brush.radialGradient(
+                            colors = listOf(
+                                theme.secondaryColor.copy(alpha = 0.2f),
+                                Color.Transparent
+                            ),
+                            radius = 150f
+                        )
+                    )
+            )
+
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                Icon(
+                    Icons.Default.Air,
+                    contentDescription = null,
+                    tint = theme.secondaryColor,
+                    modifier = Modifier.size(32.dp)
+                )
+
+                Spacer(modifier = Modifier.height(12.dp))
+
+                Text(
+                    text = if (oxygenLevel >= 0) "$oxygenLevel%" else "--",
+                    fontSize = 32.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = theme.textColor
+                )
+
+                Text(
+                    text = "SpO2",
+                    fontSize = 14.sp,
+                    color = theme.textSecondary,
+                    fontWeight = FontWeight.Medium
+                )
+
+                if (oxygenLevel >= 0) {
+                    Spacer(modifier = Modifier.height(12.dp))
+
+                    Box(
+                        contentAlignment = Alignment.Center
+                    ) {
+                        CircularProgressIndicator(
+                            progress = oxygenLevel / 100f,
+                            modifier = Modifier.size(40.dp),
+                            color = theme.secondaryColor,
+                            strokeWidth = 3.dp,
+                            trackColor = theme.secondaryColor.copy(alpha = 0.2f)
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun ModernActivityCard(
+    isActive: Boolean,
+    heartRate: Int,
+    theme: AppTheme
+) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(
+            containerColor = theme.cardColor.copy(alpha = 0.8f)
+        ),
+        shape = RoundedCornerShape(20.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(
+                    if (isActive) {
+                        Brush.horizontalGradient(
+                            colors = listOf(
+                                theme.accentColor.copy(alpha = 0.2f),
+                                theme.primaryColor.copy(alpha = 0.1f)
+                            )
+                        )
+                    } else {
+                        Brush.horizontalGradient(
+                            colors = listOf(
+                                theme.textSecondary.copy(alpha = 0.1f),
+                                Color.Transparent
+                            )
+                        )
+                    }
+                )
+        ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(20.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Box(
+                    modifier = Modifier
+                        .size(60.dp)
+                        .background(
+                            if (isActive) theme.accentColor.copy(alpha = 0.2f) else theme.textSecondary.copy(alpha = 0.2f),
+                            CircleShape
+                        ),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        if (isActive) Icons.Default.DirectionsRun else Icons.Default.SelfImprovement,
+                        contentDescription = null,
+                        tint = if (isActive) theme.accentColor else theme.textSecondary,
+                        modifier = Modifier.size(28.dp)
+                    )
+                }
+
+                Spacer(modifier = Modifier.width(16.dp))
+
+                Column(
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Text(
+                        text = if (isActive) "Active Exercise" else "Resting State",
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = theme.textColor
+                    )
+
+                    Text(
+                        text = when {
+                            heartRate > 120 -> "High intensity workout detected"
+                            heartRate > 100 -> "Moderate activity level"
+                            heartRate > 0 -> "Light activity"
+                            else -> "No activity data"
+                        },
+                        fontSize = 14.sp,
+                        color = theme.textSecondary
+                    )
+                }
+
+                if (heartRate > 0) {
+                    Text(
+                        text = "$heartRate",
+                        fontSize = 24.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = if (isActive) theme.accentColor else theme.textSecondary
                     )
                 }
             }
@@ -481,10 +930,212 @@ fun HomeScreen(
     }
 }
 
-// Fungsi-fungsi Composable lainnya tetap sama seperti kode asli
+@Composable
+fun ModernMetricCard(
+    title: String,
+    value: String,
+    icon: ImageVector,
+    color: Color,
+    theme: AppTheme,
+    modifier: Modifier = Modifier
+) {
+    Card(
+        modifier = modifier.height(100.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = theme.cardColor.copy(alpha = 0.8f)
+        ),
+        shape = RoundedCornerShape(16.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+    ) {
+        Box(
+            modifier = Modifier.fillMaxSize()
+        ) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(
+                        Brush.radialGradient(
+                            colors = listOf(
+                                color.copy(alpha = 0.1f),
+                                Color.Transparent
+                            ),
+                            radius = 100f
+                        )
+                    )
+            )
+
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(12.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                Icon(
+                    icon,
+                    contentDescription = null,
+                    tint = color,
+                    modifier = Modifier.size(24.dp)
+                )
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                Text(
+                    text = value,
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = theme.textColor,
+                    textAlign = TextAlign.Center
+                )
+
+                Text(
+                    text = title,
+                    fontSize = 12.sp,
+                    color = theme.textSecondary,
+                    textAlign = TextAlign.Center
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun ModernBatteryCard(
+    batteryLevel: Int,
+    theme: AppTheme,
+    modifier: Modifier = Modifier
+) {
+    val batteryColor = when {
+        batteryLevel < 0 -> theme.textSecondary
+        batteryLevel > 50 -> Color(0xFF10B981)
+        batteryLevel > 20 -> Color(0xFFF59E0B)
+        else -> Color(0xFFEF4444)
+    }
+
+    Card(
+        modifier = modifier.height(100.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = theme.cardColor.copy(alpha = 0.8f)
+        ),
+        shape = RoundedCornerShape(16.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+    ) {
+        Box(
+            modifier = Modifier.fillMaxSize()
+        ) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(
+                        Brush.radialGradient(
+                            colors = listOf(
+                                batteryColor.copy(alpha = 0.1f),
+                                Color.Transparent
+                            ),
+                            radius = 100f
+                        )
+                    )
+            )
+
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(12.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                Icon(
+                    Icons.Default.Battery6Bar,
+                    contentDescription = null,
+                    tint = batteryColor,
+                    modifier = Modifier.size(24.dp)
+                )
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                Text(
+                    text = if (batteryLevel >= 0) "$batteryLevel%" else "--",
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = theme.textColor
+                )
+
+                Text(
+                    text = "Battery",
+                    fontSize = 12.sp,
+                    color = theme.textSecondary
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun ModernDeviceCard(
+    theme: AppTheme,
+    modifier: Modifier = Modifier
+) {
+    Card(
+        modifier = modifier.height(100.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = theme.cardColor.copy(alpha = 0.8f)
+        ),
+        shape = RoundedCornerShape(16.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+    ) {
+        Box(
+            modifier = Modifier.fillMaxSize()
+        ) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(
+                        Brush.radialGradient(
+                            colors = listOf(
+                                Color(0xFF8B5CF6).copy(alpha = 0.1f),
+                                Color.Transparent
+                            ),
+                            radius = 100f
+                        )
+                    )
+            )
+
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(12.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                Icon(
+                    Icons.Default.Headset,
+                    contentDescription = null,
+                    tint = Color(0xFF8B5CF6),
+                    modifier = Modifier.size(24.dp)
+                )
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                Text(
+                    text = "SH-001",
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = theme.textColor
+                )
+
+                Text(
+                    text = "Headband",
+                    fontSize = 12.sp,
+                    color = theme.textSecondary
+                )
+            }
+        }
+    }
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ProfileScreen(
+fun ModernProfileScreen(
     userName: String,
     userAge: String,
     userHeight: String,
@@ -493,157 +1144,174 @@ fun ProfileScreen(
     onAgeChange: (String) -> Unit,
     onHeightChange: (String) -> Unit,
     onWeightChange: (String) -> Unit,
-    theme: AppTheme
+    theme: AppTheme,
+    modifier: Modifier = Modifier
 ) {
     LazyColumn(
-        modifier = Modifier.fillMaxSize(),
-        contentPadding = PaddingValues(16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
+        modifier = modifier.fillMaxSize(),
+        contentPadding = PaddingValues(20.dp),
+        verticalArrangement = Arrangement.spacedBy(20.dp)
     ) {
+        item {
+            Text(
+                text = "Profile",
+                fontSize = 32.sp,
+                fontWeight = FontWeight.Bold,
+                color = theme.textColor,
+                modifier = Modifier.padding(bottom = 8.dp)
+            )
+        }
+
+        // Profile Header Card
         item {
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 colors = CardDefaults.cardColors(
                     containerColor = theme.cardColor.copy(alpha = 0.8f)
                 ),
-                shape = RoundedCornerShape(16.dp)
+                shape = RoundedCornerShape(24.dp),
+                elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
             ) {
-                Column(
-                    modifier = Modifier.padding(24.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(
+                            Brush.radialGradient(
+                                colors = listOf(
+                                    theme.primaryColor.copy(alpha = 0.1f),
+                                    Color.Transparent
+                                ),
+                                radius = 300f
+                            )
+                        )
                 ) {
-                    Box(
-                        modifier = Modifier
-                            .size(80.dp)
-                            .background(
-                                theme.primaryColor.copy(alpha = 0.2f),
-                                CircleShape
-                            ),
-                        contentAlignment = Alignment.Center
+                    Column(
+                        modifier = Modifier.padding(24.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        Icon(
-                            Icons.Default.Person,
-                            contentDescription = null,
-                            tint = theme.primaryColor,
-                            modifier = Modifier.size(40.dp)
+                        Box(
+                            modifier = Modifier
+                                .size(80.dp)
+                                .background(
+                                    Brush.radialGradient(
+                                        colors = listOf(
+                                            theme.primaryColor.copy(alpha = 0.3f),
+                                            theme.primaryColor.copy(alpha = 0.1f)
+                                        )
+                                    ),
+                                    CircleShape
+                                ),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(
+                                Icons.Default.Person,
+                                contentDescription = null,
+                                tint = theme.primaryColor,
+                                modifier = Modifier.size(40.dp)
+                            )
+                        }
+
+                        Spacer(modifier = Modifier.height(16.dp))
+
+                        Text(
+                            text = userName,
+                            fontSize = 24.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = theme.textColor
+                        )
+
+                        Text(
+                            text = "Smart Headband User",
+                            fontSize = 14.sp,
+                            color = theme.textSecondary
                         )
                     }
-                    Spacer(modifier = Modifier.height(16.dp))
-                    Text(
-                        text = userName,
-                        fontSize = 24.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = theme.textColor
-                    )
-                    Text(
-                        text = "Smart Headband User",
-                        fontSize = 14.sp,
-                        color = if (theme.name == "Light") Color.Gray else Color.Gray
-                    )
                 }
             }
         }
 
+        // Personal Information Card
         item {
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 colors = CardDefaults.cardColors(
                     containerColor = theme.cardColor.copy(alpha = 0.8f)
                 ),
-                shape = RoundedCornerShape(16.dp)
+                shape = RoundedCornerShape(20.dp),
+                elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
             ) {
                 Column(
-                    modifier = Modifier.padding(16.dp)
+                    modifier = Modifier.padding(20.dp)
                 ) {
                     Text(
                         text = "Personal Information",
-                        fontSize = 18.sp,
+                        fontSize = 20.sp,
                         fontWeight = FontWeight.Bold,
                         color = theme.textColor
                     )
-                    Spacer(modifier = Modifier.height(16.dp))
 
-                    OutlinedTextField(
+                    Spacer(modifier = Modifier.height(20.dp))
+
+                    ModernTextField(
                         value = userName,
                         onValueChange = onNameChange,
-                        label = { Text("Name", color = Color.Gray) },
-                        modifier = Modifier.fillMaxWidth(),
-                        colors = OutlinedTextFieldDefaults.colors(
-                            focusedTextColor = theme.textColor,
-                            unfocusedTextColor = theme.textColor,
-                            focusedBorderColor = theme.primaryColor,
-                            unfocusedBorderColor = Color.Gray
-                        )
+                        label = "Name",
+                        theme = theme
                     )
 
-                    Spacer(modifier = Modifier.height(12.dp))
+                    Spacer(modifier = Modifier.height(16.dp))
 
-                    OutlinedTextField(
+                    ModernTextField(
                         value = userAge,
                         onValueChange = onAgeChange,
-                        label = { Text("Age", color = Color.Gray) },
-                        modifier = Modifier.fillMaxWidth(),
-                        colors = OutlinedTextFieldDefaults.colors(
-                            focusedTextColor = theme.textColor,
-                            unfocusedTextColor = theme.textColor,
-                            focusedBorderColor = theme.primaryColor,
-                            unfocusedBorderColor = Color.Gray
-                        )
+                        label = "Age",
+                        theme = theme
                     )
 
-                    Spacer(modifier = Modifier.height(12.dp))
+                    Spacer(modifier = Modifier.height(16.dp))
 
-                    OutlinedTextField(
+                    ModernTextField(
                         value = userHeight,
                         onValueChange = onHeightChange,
-                        label = { Text("Height (cm)", color = Color.Gray) },
-                        modifier = Modifier.fillMaxWidth(),
-                        colors = OutlinedTextFieldDefaults.colors(
-                            focusedTextColor = theme.textColor,
-                            unfocusedTextColor = theme.textColor,
-                            focusedBorderColor = theme.primaryColor,
-                            unfocusedBorderColor = Color.Gray
-                        )
+                        label = "Height (cm)",
+                        theme = theme
                     )
 
-                    Spacer(modifier = Modifier.height(12.dp))
+                    Spacer(modifier = Modifier.height(16.dp))
 
-                    OutlinedTextField(
+                    ModernTextField(
                         value = userWeight,
                         onValueChange = onWeightChange,
-                        label = { Text("Weight (kg)", color = Color.Gray) },
-                        modifier = Modifier.fillMaxWidth(),
-                        colors = OutlinedTextFieldDefaults.colors(
-                            focusedTextColor = theme.textColor,
-                            unfocusedTextColor = theme.textColor,
-                            focusedBorderColor = theme.primaryColor,
-                            unfocusedBorderColor = Color.Gray
-                        )
+                        label = "Weight (kg)",
+                        theme = theme
                     )
                 }
             }
         }
 
+        // Health Goals Card
         item {
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 colors = CardDefaults.cardColors(
                     containerColor = theme.cardColor.copy(alpha = 0.8f)
                 ),
-                shape = RoundedCornerShape(16.dp)
+                shape = RoundedCornerShape(20.dp),
+                elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
             ) {
                 Column(
-                    modifier = Modifier.padding(16.dp)
+                    modifier = Modifier.padding(20.dp)
                 ) {
                     Text(
                         text = "Health Goals",
-                        fontSize = 18.sp,
+                        fontSize = 20.sp,
                         fontWeight = FontWeight.Bold,
                         color = theme.textColor
                     )
-                    Spacer(modifier = Modifier.height(16.dp))
 
-                    ProfileGoalItem(
+                    Spacer(modifier = Modifier.height(20.dp))
+
+                    ModernGoalItem(
                         title = "Target Heart Rate",
                         value = "120-150 BPM",
                         icon = Icons.Default.Favorite,
@@ -651,7 +1319,7 @@ fun ProfileScreen(
                         theme = theme
                     )
 
-                    ProfileGoalItem(
+                    ModernGoalItem(
                         title = "Daily Activity Goal",
                         value = "60 minutes",
                         icon = Icons.Default.DirectionsRun,
@@ -659,7 +1327,7 @@ fun ProfileScreen(
                         theme = theme
                     )
 
-                    ProfileGoalItem(
+                    ModernGoalItem(
                         title = "Stress Management",
                         value = "Keep below 30%",
                         icon = Icons.Default.Psychology,
@@ -672,8 +1340,32 @@ fun ProfileScreen(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ProfileGoalItem(
+fun ModernTextField(
+    value: String,
+    onValueChange: (String) -> Unit,
+    label: String,
+    theme: AppTheme
+) {
+    OutlinedTextField(
+        value = value,
+        onValueChange = onValueChange,
+        label = { Text(label, color = theme.textSecondary) },
+        modifier = Modifier.fillMaxWidth(),
+        colors = OutlinedTextFieldDefaults.colors(
+            focusedTextColor = theme.textColor,
+            unfocusedTextColor = theme.textColor,
+            focusedBorderColor = theme.primaryColor,
+            unfocusedBorderColor = theme.textSecondary.copy(alpha = 0.5f),
+            cursorColor = theme.primaryColor
+        ),
+        shape = RoundedCornerShape(12.dp)
+    )
+}
+
+@Composable
+fun ModernGoalItem(
     title: String,
     value: String,
     icon: ImageVector,
@@ -683,46 +1375,59 @@ fun ProfileGoalItem(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 8.dp),
+            .padding(vertical = 12.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Icon(
-            icon,
-            contentDescription = null,
-            tint = color,
-            modifier = Modifier.size(24.dp)
-        )
+        Box(
+            modifier = Modifier
+                .size(40.dp)
+                .background(color.copy(alpha = 0.2f), CircleShape),
+            contentAlignment = Alignment.Center
+        ) {
+            Icon(
+                icon,
+                contentDescription = null,
+                tint = color,
+                modifier = Modifier.size(20.dp)
+            )
+        }
+
         Spacer(modifier = Modifier.width(16.dp))
-        Column {
+
+        Column(
+            modifier = Modifier.weight(1f)
+        ) {
             Text(
                 text = title,
-                fontSize = 14.sp,
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Medium,
                 color = theme.textColor
             )
             Text(
                 text = value,
-                fontSize = 12.sp,
-                color = Color.Gray
+                fontSize = 14.sp,
+                color = theme.textSecondary
             )
         }
     }
 }
 
 @Composable
-fun SettingsScreen(
+fun ModernSettingsScreen(
     selectedTheme: AppTheme,
     onThemeChange: (AppTheme) -> Unit,
-    theme: AppTheme
+    theme: AppTheme,
+    modifier: Modifier = Modifier
 ) {
     LazyColumn(
-        modifier = Modifier.fillMaxSize(),
-        contentPadding = PaddingValues(16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
+        modifier = modifier.fillMaxSize(),
+        contentPadding = PaddingValues(20.dp),
+        verticalArrangement = Arrangement.spacedBy(20.dp)
     ) {
         item {
             Text(
                 text = "Settings",
-                fontSize = 28.sp,
+                fontSize = 32.sp,
                 fontWeight = FontWeight.Bold,
                 color = theme.textColor,
                 modifier = Modifier.padding(bottom = 8.dp)
@@ -736,29 +1441,30 @@ fun SettingsScreen(
                 colors = CardDefaults.cardColors(
                     containerColor = theme.cardColor.copy(alpha = 0.8f)
                 ),
-                shape = RoundedCornerShape(16.dp)
+                shape = RoundedCornerShape(20.dp),
+                elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
             ) {
                 Column(
-                    modifier = Modifier.padding(16.dp)
+                    modifier = Modifier.padding(20.dp)
                 ) {
                     Text(
                         text = "Theme Selection",
-                        fontSize = 18.sp,
+                        fontSize = 20.sp,
                         fontWeight = FontWeight.Bold,
                         color = theme.textColor
                     )
                     Text(
-                        text = "Choose your preferred theme",
+                        text = "Choose your preferred visual style",
                         fontSize = 14.sp,
-                        color = Color.Gray,
-                        modifier = Modifier.padding(bottom = 16.dp)
+                        color = theme.textSecondary,
+                        modifier = Modifier.padding(bottom = 20.dp)
                     )
 
                     LazyRow(
-                        horizontalArrangement = Arrangement.spacedBy(12.dp)
+                        horizontalArrangement = Arrangement.spacedBy(16.dp)
                     ) {
                         items(availableThemes) { themeOption ->
-                            ThemeCard(
+                            ModernThemeCard(
                                 theme = themeOption,
                                 isSelected = selectedTheme == themeOption,
                                 onSelect = { onThemeChange(themeOption) }
@@ -769,211 +1475,134 @@ fun SettingsScreen(
             }
         }
 
+        // Device Settings
         item {
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                colors = CardDefaults.cardColors(
-                    containerColor = theme.cardColor.copy(alpha = 0.8f)
-                ),
-                shape = RoundedCornerShape(16.dp)
-            ) {
-                Column(
-                    modifier = Modifier.padding(16.dp)
-                ) {
-                    Text(
-                        text = "Device Settings",
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = theme.textColor
-                    )
-                    Spacer(modifier = Modifier.height(16.dp))
-
-                    SettingsItem(
+            SettingsSection(
+                title = "Device Settings",
+                items = listOf(
+                    SettingsItemData(
                         title = "Bluetooth Connection",
-                        subtitle = "Manage device connection",
+                        subtitle = "Manage device pairing",
                         icon = Icons.Default.Bluetooth,
-                        color = Color(0xFF2196F3),
-                        theme = theme
-                    )
-
-                    SettingsItem(
-                        title = "Auto-sync",
-                        subtitle = "Sync data automatically",
+                        color = Color(0xFF3B82F6)
+                    ),
+                    SettingsItemData(
+                        title = "Auto-sync Data",
+                        subtitle = "Automatic data synchronization",
                         icon = Icons.Default.Sync,
-                        color = Color(0xFF4CAF50),
-                        theme = theme
-                    )
-
-                    SettingsItem(
+                        color = Color(0xFF10B981)
+                    ),
+                    SettingsItemData(
                         title = "Battery Optimization",
-                        subtitle = "Optimize battery usage",
+                        subtitle = "Optimize power consumption",
                         icon = Icons.Default.Battery6Bar,
-                        color = theme.accentColor,
-                        theme = theme
+                        color = theme.accentColor
                     )
-                }
-            }
+                ),
+                theme = theme
+            )
         }
 
+        // Notifications
         item {
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                colors = CardDefaults.cardColors(
-                    containerColor = theme.cardColor.copy(alpha = 0.8f)
-                ),
-                shape = RoundedCornerShape(16.dp)
-            ) {
-                Column(
-                    modifier = Modifier.padding(16.dp)
-                ) {
-                    Text(
-                        text = "Notifications",
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = theme.textColor
-                    )
-                    Spacer(modifier = Modifier.height(16.dp))
-
-                    SettingsItem(
+            SettingsSection(
+                title = "Notifications",
+                items = listOf(
+                    SettingsItemData(
                         title = "Health Alerts",
-                        subtitle = "Get notified about health changes",
+                        subtitle = "Critical health notifications",
                         icon = Icons.Default.Notifications,
-                        color = theme.primaryColor,
-                        theme = theme
-                    )
-
-                    SettingsItem(
+                        color = theme.primaryColor
+                    ),
+                    SettingsItemData(
                         title = "Activity Reminders",
-                        subtitle = "Reminders to stay active",
+                        subtitle = "Movement and exercise reminders",
                         icon = Icons.Default.AccessAlarm,
-                        color = Color(0xFFFF9800),
-                        theme = theme
-                    )
-
-                    SettingsItem(
+                        color = Color(0xFFF59E0B)
+                    ),
+                    SettingsItemData(
                         title = "Low Battery Warning",
-                        subtitle = "Alert when battery is low",
+                        subtitle = "Device battery alerts",
                         icon = Icons.Default.Warning,
-                        color = Color(0xFFFF5722),
-                        theme = theme
+                        color = Color(0xFFEF4444)
                     )
-                }
-            }
+                ),
+                theme = theme
+            )
         }
 
+        // Privacy & Security
         item {
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                colors = CardDefaults.cardColors(
-                    containerColor = theme.cardColor.copy(alpha = 0.8f)
-                ),
-                shape = RoundedCornerShape(16.dp)
-            ) {
-                Column(
-                    modifier = Modifier.padding(16.dp)
-                ) {
-                    Text(
-                        text = "Privacy & Security",
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = theme.textColor
-                    )
-                    Spacer(modifier = Modifier.height(16.dp))
-
-                    SettingsItem(
+            SettingsSection(
+                title = "Privacy & Security",
+                items = listOf(
+                    SettingsItemData(
                         title = "Data Privacy",
                         subtitle = "Control your data sharing",
                         icon = Icons.Default.Security,
-                        color = Color(0xFF9C27B0),
-                        theme = theme
-                    )
-
-                    SettingsItem(
+                        color = Color(0xFF8B5CF6)
+                    ),
+                    SettingsItemData(
                         title = "Export Data",
                         subtitle = "Download your health data",
                         icon = Icons.Default.Download,
-                        color = Color(0xFF607D8B),
-                        theme = theme
+                        color = Color(0xFF6B7280)
                     )
-                }
-            }
+                ),
+                theme = theme
+            )
         }
     }
 }
 
+data class SettingsItemData(
+    val title: String,
+    val subtitle: String,
+    val icon: ImageVector,
+    val color: Color
+)
+
 @Composable
-fun ThemeCard(
-    theme: AppTheme,
-    isSelected: Boolean,
-    onSelect: () -> Unit
+fun SettingsSection(
+    title: String,
+    items: List<SettingsItemData>,
+    theme: AppTheme
 ) {
     Card(
-        modifier = Modifier
-            .size(100.dp, 120.dp)
-            .clickable { onSelect() },
+        modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(
-            containerColor = if (isSelected)
-                theme.primaryColor.copy(alpha = 0.3f)
-            else
-                Color(0xFF1E1E2E).copy(alpha = 0.8f)
+            containerColor = theme.cardColor.copy(alpha = 0.8f)
         ),
-        shape = RoundedCornerShape(12.dp),
-        border = if (isSelected)
-            androidx.compose.foundation.BorderStroke(2.dp, theme.primaryColor)
-        else null
+        shape = RoundedCornerShape(20.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(8.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
+            modifier = Modifier.padding(20.dp)
         ) {
-            // Theme preview colors
-            Row(
-                modifier = Modifier.height(20.dp),
-                horizontalArrangement = Arrangement.spacedBy(2.dp)
-            ) {
-                Box(
-                    modifier = Modifier
-                        .size(14.dp)
-                        .background(theme.primaryColor, CircleShape)
-                )
-                Box(
-                    modifier = Modifier
-                        .size(14.dp)
-                        .background(theme.secondaryColor, CircleShape)
-                )
-                Box(
-                    modifier = Modifier
-                        .size(14.dp)
-                        .background(theme.accentColor, CircleShape)
+            Text(
+                text = title,
+                fontSize = 20.sp,
+                fontWeight = FontWeight.Bold,
+                color = theme.textColor
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            items.forEach { item ->
+                ModernSettingsItem(
+                    title = item.title,
+                    subtitle = item.subtitle,
+                    icon = item.icon,
+                    color = item.color,
+                    theme = theme
                 )
             }
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            Icon(
-                theme.icon,
-                contentDescription = null,
-                tint = if (isSelected) theme.primaryColor else theme.textColor,
-                modifier = Modifier.size(24.dp)
-            )
-
-            Spacer(modifier = Modifier.height(4.dp))
-
-            Text(
-                text = theme.name,
-                fontSize = 12.sp,
-                color = if (isSelected) theme.primaryColor else theme.textColor,
-                fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal
-            )
         }
     }
 }
 
 @Composable
-fun SettingsItem(
+fun ModernSettingsItem(
     title: String,
     subtitle: String,
     icon: ImageVector,
@@ -983,41 +1612,138 @@ fun SettingsItem(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 8.dp),
+            .clip(RoundedCornerShape(12.dp))
+            .clickable { }
+            .padding(12.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Icon(
-            icon,
-            contentDescription = null,
-            tint = color,
-            modifier = Modifier.size(24.dp)
-        )
+        Box(
+            modifier = Modifier
+                .size(40.dp)
+                .background(color.copy(alpha = 0.2f), CircleShape),
+            contentAlignment = Alignment.Center
+        ) {
+            Icon(
+                icon,
+                contentDescription = null,
+                tint = color,
+                modifier = Modifier.size(20.dp)
+            )
+        }
+
         Spacer(modifier = Modifier.width(16.dp))
+
         Column(
             modifier = Modifier.weight(1f)
         ) {
             Text(
                 text = title,
                 fontSize = 16.sp,
+                fontWeight = FontWeight.Medium,
                 color = theme.textColor
             )
             Text(
                 text = subtitle,
-                fontSize = 12.sp,
-                color = Color.Gray
+                fontSize = 14.sp,
+                color = theme.textSecondary
             )
         }
+
         Icon(
             Icons.Default.ChevronRight,
             contentDescription = null,
-            tint = Color.Gray,
+            tint = theme.textSecondary,
             modifier = Modifier.size(20.dp)
         )
     }
 }
 
 @Composable
-fun HistoryScreen(theme: AppTheme) {
+fun ModernThemeCard(
+    theme: AppTheme,
+    isSelected: Boolean,
+    onSelect: () -> Unit
+) {
+    val animatedScale by animateFloatAsState(
+        targetValue = if (isSelected) 1.05f else 1f,
+        animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy)
+    )
+
+    Card(
+        modifier = Modifier
+            .size(110.dp, 130.dp)
+            .scale(animatedScale)
+            .clickable { onSelect() },
+        colors = CardDefaults.cardColors(
+            containerColor = if (isSelected)
+                theme.primaryColor.copy(alpha = 0.2f)
+            else
+                theme.cardColor.copy(alpha = 0.8f)
+        ),
+        shape = RoundedCornerShape(16.dp),
+        elevation = CardDefaults.cardElevation(
+            defaultElevation = if (isSelected) 8.dp else 2.dp
+        ),
+        border = if (isSelected)
+            androidx.compose.foundation.BorderStroke(2.dp, theme.primaryColor)
+        else null
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(12.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            // Theme preview colors
+            Row(
+                modifier = Modifier.height(24.dp),
+                horizontalArrangement = Arrangement.spacedBy(4.dp)
+            ) {
+                Box(
+                    modifier = Modifier
+                        .size(16.dp)
+                        .background(theme.primaryColor, CircleShape)
+                )
+                Box(
+                    modifier = Modifier
+                        .size(16.dp)
+                        .background(theme.secondaryColor, CircleShape)
+                )
+                Box(
+                    modifier = Modifier
+                        .size(16.dp)
+                        .background(theme.accentColor, CircleShape)
+                )
+            }
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            Icon(
+                theme.icon,
+                contentDescription = null,
+                tint = if (isSelected) theme.primaryColor else theme.textColor,
+                modifier = Modifier.size(28.dp)
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Text(
+                text = theme.name,
+                fontSize = 13.sp,
+                color = if (isSelected) theme.primaryColor else theme.textColor,
+                fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
+                textAlign = TextAlign.Center
+            )
+        }
+    }
+}
+
+@Composable
+fun ModernHistoryScreen(
+    theme: AppTheme,
+    modifier: Modifier = Modifier
+) {
     val historyData = remember {
         listOf(
             HistoryEntry("Today", "Heart Rate: 72 BPM", "12:30 PM", Icons.Default.Favorite, theme.primaryColor),
@@ -1025,7 +1751,7 @@ fun HistoryScreen(theme: AppTheme) {
             HistoryEntry("Today", "Exercise: 30 min", "11:30 AM", Icons.Default.DirectionsRun, theme.accentColor),
             HistoryEntry("Today", "Stress: Low", "10:00 AM", Icons.Default.Psychology, theme.secondaryColor),
             HistoryEntry("Yesterday", "Heart Rate: 75 BPM", "8:00 PM", Icons.Default.Favorite, theme.primaryColor),
-            HistoryEntry("Yesterday", "Temperature: 36.8°C", "7:30 PM", Icons.Default.Thermostat, Color(0xFFFF6B6B)),
+            HistoryEntry("Yesterday", "Temperature: 36.8°C", "7:30 PM", Icons.Default.Thermostat, Color(0xFFEF4444)),
             HistoryEntry("Yesterday", "Exercise: 45 min", "6:00 PM", Icons.Default.DirectionsRun, theme.accentColor),
             HistoryEntry("2 days ago", "Heart Rate: 68 BPM", "9:00 AM", Icons.Default.Favorite, theme.primaryColor),
             HistoryEntry("2 days ago", "SpO2: 97%", "8:30 AM", Icons.Default.Air, theme.secondaryColor),
@@ -1033,14 +1759,14 @@ fun HistoryScreen(theme: AppTheme) {
     }
 
     LazyColumn(
-        modifier = Modifier.fillMaxSize(),
-        contentPadding = PaddingValues(16.dp),
+        modifier = modifier.fillMaxSize(),
+        contentPadding = PaddingValues(20.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         item {
             Text(
                 text = "Health History",
-                fontSize = 28.sp,
+                fontSize = 32.sp,
                 fontWeight = FontWeight.Bold,
                 color = theme.textColor,
                 modifier = Modifier.padding(bottom = 8.dp)
@@ -1053,10 +1779,11 @@ fun HistoryScreen(theme: AppTheme) {
                 colors = CardDefaults.cardColors(
                     containerColor = theme.cardColor.copy(alpha = 0.8f)
                 ),
-                shape = RoundedCornerShape(16.dp)
+                shape = RoundedCornerShape(20.dp),
+                elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
             ) {
                 Column(
-                    modifier = Modifier.padding(16.dp)
+                    modifier = Modifier.padding(20.dp)
                 ) {
                     Text(
                         text = date,
@@ -1064,12 +1791,13 @@ fun HistoryScreen(theme: AppTheme) {
                         fontWeight = FontWeight.Bold,
                         color = theme.textColor
                     )
-                    Spacer(modifier = Modifier.height(12.dp))
+
+                    Spacer(modifier = Modifier.height(16.dp))
 
                     entries.forEach { entry ->
-                        HistoryItem(entry = entry, theme = theme)
+                        ModernHistoryItem(entry = entry, theme = theme)
                         if (entry != entries.last()) {
-                            Spacer(modifier = Modifier.height(8.dp))
+                            Spacer(modifier = Modifier.height(12.dp))
                         }
                     }
                 }
@@ -1087,14 +1815,14 @@ data class HistoryEntry(
 )
 
 @Composable
-fun HistoryItem(entry: HistoryEntry, theme: AppTheme) {
+fun ModernHistoryItem(entry: HistoryEntry, theme: AppTheme) {
     Row(
         modifier = Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Box(
             modifier = Modifier
-                .size(32.dp)
+                .size(40.dp)
                 .background(entry.color.copy(alpha = 0.2f), CircleShape),
             contentAlignment = Alignment.Center
         ) {
@@ -1102,317 +1830,25 @@ fun HistoryItem(entry: HistoryEntry, theme: AppTheme) {
                 entry.icon,
                 contentDescription = null,
                 tint = entry.color,
-                modifier = Modifier.size(16.dp)
+                modifier = Modifier.size(20.dp)
             )
         }
-        Spacer(modifier = Modifier.width(12.dp))
+
+        Spacer(modifier = Modifier.width(16.dp))
+
         Column(
             modifier = Modifier.weight(1f)
         ) {
             Text(
                 text = entry.description,
-                fontSize = 14.sp,
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Medium,
                 color = theme.textColor
             )
             Text(
                 text = entry.time,
-                fontSize = 12.sp,
-                color = Color.Gray
-            )
-        }
-    }
-}
-
-@Composable
-fun ConnectionIndicator(isConnected: Boolean, theme: AppTheme) {
-    val color = if (isConnected) Color(0xFF4CAF50) else Color(0xFFFF5722)
-    val infiniteTransition = rememberInfiniteTransition(label = "pulse")
-    val alpha by infiniteTransition.animateFloat(
-        initialValue = 0.3f,
-        targetValue = 1f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(1000),
-            repeatMode = RepeatMode.Reverse
-        ),
-        label = "alpha"
-    )
-
-    Box(
-        modifier = Modifier
-            .size(12.dp)
-            .background(color.copy(alpha = alpha), CircleShape)
-    )
-}
-
-@Composable
-fun HeartRateCard(heartRate: Int, theme: AppTheme, modifier: Modifier = Modifier) {
-    Card(
-        modifier = modifier,
-        colors = CardDefaults.cardColors(
-            containerColor = theme.cardColor.copy(alpha = 0.8f)
-        ),
-        shape = RoundedCornerShape(16.dp)
-    ) {
-        Column(
-            modifier = Modifier.padding(16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Icon(
-                Icons.Default.Favorite,
-                contentDescription = null,
-                tint = theme.primaryColor,
-                modifier = Modifier.size(32.dp)
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(
-                text = if (heartRate >= 0) "$heartRate" else "--",   // <-- tampilkan "--" saat disconnect
-                fontSize = 24.sp,
-                fontWeight = FontWeight.Bold,
-                color = theme.textColor
-            )
-            Text(
-                text = "BPM",
-                fontSize = 12.sp,
-                color = Color.Gray
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-
-            if (heartRate >= 0) { // <-- wave cuma jalan kalau ada data
-                HeartRateWave(heartRate = heartRate, theme = theme)
-            }
-        }
-    }
-}
-
-
-@Composable
-fun HeartRateWave(heartRate: Int, theme: AppTheme) {
-    val infiniteTransition = rememberInfiniteTransition(label = "wave")
-    val phase by infiniteTransition.animateFloat(
-        initialValue = 0f,
-        targetValue = 2f * Math.PI.toFloat(),
-        animationSpec = infiniteRepeatable(
-            animation = tween(1000),
-            repeatMode = RepeatMode.Restart
-        ),
-        label = "phase"
-    )
-
-    Canvas(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(30.dp)
-    ) {
-        val width = size.width
-        val height = size.height
-        val centerY = height / 2
-
-        for (i in 0 until width.toInt() step 4) {
-            val x = i.toFloat()
-            val y = centerY + sin(phase + x * 0.02f) * 10f
-            drawCircle(
-                color = theme.primaryColor,
-                radius = 1.5f,
-                center = Offset(x, y)
-            )
-        }
-    }
-}
-
-@Composable
-fun OxygenCard(oxygenLevel: Int, theme: AppTheme, modifier: Modifier = Modifier) {
-    Card(
-        modifier = modifier,
-        colors = CardDefaults.cardColors(
-            containerColor = theme.cardColor.copy(alpha = 0.8f)
-        ),
-        shape = RoundedCornerShape(16.dp)
-    ) {
-        Column(
-            modifier = Modifier.padding(16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Icon(
-                Icons.Default.Air,
-                contentDescription = null,
-                tint = theme.secondaryColor,
-                modifier = Modifier.size(32.dp)
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(
-                text = if (oxygenLevel >= 0) "$oxygenLevel%" else "--",   // <-- tampilkan "--"
-                fontSize = 24.sp,
-                fontWeight = FontWeight.Bold,
-                color = theme.textColor
-            )
-            Text(
-                text = "SpO2",
-                fontSize = 12.sp,
-                color = Color.Gray
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-
-            if (oxygenLevel >= 0) { // <-- jangan tampilkan progress bar saat disconnect
-                CircularProgressIndicator(
-                    progress = oxygenLevel / 100f,
-                    modifier = Modifier.size(40.dp),
-                    color = theme.secondaryColor,
-                    strokeWidth = 4.dp
-                )
-            }
-        }
-    }
-}
-
-@Composable
-fun ActivityCard(isActive: Boolean, theme: AppTheme, modifier: Modifier = Modifier) {
-    Card(
-        modifier = modifier,
-        colors = CardDefaults.cardColors(
-            containerColor = theme.cardColor.copy(alpha = 0.8f)
-        ),
-        shape = RoundedCornerShape(16.dp)
-    ) {
-        Row(
-            modifier = Modifier.padding(16.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Icon(
-                if (isActive) Icons.Default.DirectionsRun else Icons.Default.SelfImprovement,
-                contentDescription = null,
-                tint = if (isActive) theme.accentColor else theme.secondaryColor,
-                modifier = Modifier.size(40.dp)
-            )
-            Spacer(modifier = Modifier.width(16.dp))
-            Column {
-                Text(
-                    text = if (isActive) "Active Exercise" else "Resting",
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = theme.textColor
-                )
-                Text(
-                    text = if (isActive) "High intensity detected" else "Low activity level",
-                    fontSize = 14.sp,
-                    color = Color.Gray
-                )
-            }
-        }
-    }
-}
-
-@Composable
-fun MetricCard(
-    title: String,
-    value: String,    // <-- tetap String
-    icon: ImageVector,
-    color: Color,
-    theme: AppTheme,
-    modifier: Modifier = Modifier
-) {
-    Card(
-        modifier = modifier,
-        colors = CardDefaults.cardColors(
-            containerColor = theme.cardColor.copy(alpha = 0.8f)
-        ),
-        shape = RoundedCornerShape(16.dp)
-    ) {
-        Column(
-            modifier = Modifier.padding(16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Icon(
-                icon,
-                contentDescription = null,
-                tint = color,
-                modifier = Modifier.size(24.dp)
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(
-                text = value,   // <-- bisa angka atau "--"
-                fontSize = 20.sp,
-                fontWeight = FontWeight.Bold,
-                color = theme.textColor
-            )
-            Text(
-                text = title,
-                fontSize = 12.sp,
-                color = Color.Gray
-            )
-        }
-    }
-}
-
-@Composable
-fun BatteryCard(batteryLevel: Int, theme: AppTheme, modifier: Modifier = Modifier) {
-    Card(
-        modifier = modifier,
-        colors = CardDefaults.cardColors(
-            containerColor = theme.cardColor.copy(alpha = 0.8f)
-        ),
-        shape = RoundedCornerShape(16.dp)
-    ) {
-        Column(
-            modifier = Modifier.padding(16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Icon(
-                Icons.Default.Battery6Bar,
-                contentDescription = null,
-                tint = when {
-                    batteryLevel < 0 -> Color.Gray                 // <-- abu-abu kalau disconnect
-                    batteryLevel > 50 -> Color(0xFF4CAF50)
-                    batteryLevel > 20 -> theme.accentColor
-                    else -> theme.primaryColor
-                },
-                modifier = Modifier.size(24.dp)
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(
-                text = if (batteryLevel >= 0) "$batteryLevel%" else "--",   // <-- tampilkan "--"
-                fontSize = 20.sp,
-                fontWeight = FontWeight.Bold,
-                color = theme.textColor
-            )
-            Text(
-                text = "Battery",
-                fontSize = 12.sp,
-                color = Color.Gray
-            )
-        }
-    }
-}
-
-@Composable
-fun DeviceInfoCard(theme: AppTheme, modifier: Modifier = Modifier) {
-    Card(
-        modifier = modifier,
-        colors = CardDefaults.cardColors(
-            containerColor = theme.cardColor.copy(alpha = 0.8f)
-        ),
-        shape = RoundedCornerShape(16.dp)
-    ) {
-        Column(
-            modifier = Modifier.padding(16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Icon(
-                Icons.Default.Headset,
-                contentDescription = null,
-                tint = Color(0xFF9C27B0),
-                modifier = Modifier.size(24.dp)
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(
-                text = "SH-001",
-                fontSize = 16.sp,
-                fontWeight = FontWeight.Bold,
-                color = theme.textColor
-            )
-            Text(
-                text = "Smart Headband",
-                fontSize = 12.sp,
-                color = Color.Gray
+                fontSize = 14.sp,
+                color = theme.textSecondary
             )
         }
     }
