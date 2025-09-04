@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KAVLO - Smart Headband for Athletic Performance</title>
+    <meta name="description" content="KAVLO smart headband tracks your health in real-time during workouts with 5 advanced sensors, AI-powered fatigue analysis, and inclusive design features.">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <link rel="stylesheet" href="Style.css">
+</head>
+<body>
+    <div class="animated-bg" id="animatedBg"></div>
+
+    <nav class="navbar" id="navbar">
+        <div class="nav-content">
+            <div class="logo" onclick="scrollToTop()">KAVLO</div>
+            <ul class="nav-links" id="navLinks">
+                <li><a href="#home">Home</a></li>
+                <li><a href="#features">Features</a></li>
+                <li><a href="#specs">Specs</a></li>
+                <li><a href="#download">Download</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
+            <div class="hamburger" id="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <section class="hero" id="home">
+        <div class="hero-content">
+            <div class="hero-text">
+                <h1>Next-Gen Sport Assistant Technology</h1>
+                <p>Transform your fitness journey with intelligent health monitoring. KAVLO's advanced sensor array and AI-powered analytics provide real-time insights to optimize your performance while prioritizing safety and accessibility for all users.</p>
+                <div class="cta-buttons">
+                    <a href="#download" class="btn btn-primary">
+                        <span>Get the App</span>
+                        <span>↓</span>
+                    </a>
+                    <a href="#features" class="btn btn-secondary">
+                        <span>Explore Features</span>
+                        <span>→</span>
+                    </a>
+                </div>
+            </div>
+            <div class="model-container">
+                <div id="threejs-container">
+                    <div class="loading" id="loading">
+                        <div class="loading-spinner"></div>
+                        <div>Loading 3D Model...</div>
+                    </div>
+                </div>
+                <div class="interaction-hint">Drag to rotate • Scroll to zoom</div>
+            </div>
+        </div>
+    </section>
+
+    <section class="features" id="features">
+        <div class="section-header">
+            <h2>Revolutionary Features</h2>
+            <p>Experience the future of fitness monitoring with cutting-edge technology designed for every athlete.</p>
+        </div>
+        <div class="features-grid">
+            <div class="feature-card" tabindex="0">
+                <div class="feature-icon">🧠</div>
+                <h3>Multi-Sensor Health Tracking</h3>
+                <p>Advanced sensor array including Heart Rate (PPG), Skin Temperature, Galvanic Skin Response (GSR), Accelerometer & Gyroscope, and Pulse Oximeter (SpO₂) for comprehensive health monitoring.</p>
+            </div>
+            <div class="feature-card" tabindex="0">
+                <div class="feature-icon">🤖</div>
+                <h3>AI-Powered Fatigue Analysis</h3>
+                <p>Real-time machine learning algorithms detect overexertion patterns and provide personalized alerts before reaching dangerous levels, ensuring safer workouts for everyone.</p>
+            </div>
+            <div class="feature-card" tabindex="0">
+                <div class="feature-icon">🎯</div>
+                <h3>Inclusive Assistive Alerts</h3>
+                <p>Gentle vibration notifications provide accessible feedback for users with disabilities, pregnant women, and beginners, promoting safer exercise practices.</p>
+            </div>
+            <div class="feature-card" tabindex="0">
+                <div class="feature-icon">📱</div>
+                <h3>Personalized Mobile Insights</h3>
+                <p>Seamless app integration with inclusive UI/UX design, featuring real-time dashboards, personalized recommendations, and secure data sharing capabilities.</p>
+            </div>
+            <div class="feature-card" tabindex="0">
+                <div class="feature-icon">🔋</div>
+                <h3>All-Day Performance</h3>
+                <p>Ultra-efficient power management delivers 12+ hours of continuous monitoring with fast wireless charging that reaches 100% in just 2 hours.</p>
+            </div>
+            <div class="feature-card" tabindex="0">
+                <div class="feature-icon">🛡️</div>
+                <h3>Posture & Balance Monitoring</h3>
+                <p>Advanced motion sensors detect unstable movements and poor posture, reducing injury risk especially for users with neurological or physical conditions.</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="specs" id="specs">
+        <div class="specs-container">
+            <div class="section-header">
+                <h2>Technical Specifications</h2>
+                <p>Engineered for precision, designed for comfort, built for performance.</p>
+            </div>
+            <div class="specs-grid">
+                <div class="spec-item" tabindex="0">
+                    <div class="spec-number">5</div>
+                    <div class="spec-label">Advanced Sensors</div>
+                </div>
+                <div class="spec-item" tabindex="0">
+                    <div class="spec-number">1000Hz</div>
+                    <div class="spec-label">Sampling Rate</div>
+                </div>
+                <div class="spec-item" tabindex="0">
+                    <div class="spec-number">12h</div>
+                    <div class="spec-label">Battery Life</div>
+                </div>
+                <div class="spec-item" tabindex="0">
+                    <div class="spec-number">45g</div>
+                    <div class="spec-label">Lightweight Design</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="download-section" id="download">
+        <div class="download-content">
+            <div class="section-header">
+                <h2>Download KAVLO Mobile App</h2>
+                <p>Unlock the full potential of your KAVLO device with our comprehensive mobile companion featuring advanced analytics and personalized insights.</p>
+            </div>
+            
+            <div class="download-apps">
+                <a href="#" class="app-download" onclick="downloadApp('android')" tabindex="0">
+                    <div class="app-icon">🤖</div>
+                    <div>
+                        <div style="font-size: 0.9rem; opacity: 0.8;">Available on</div>
+                        <div style="font-size: 1.2rem; font-weight: 600;">Google Play</div>
+                    </div>
+                </a>
+                <a href="#" class="app-download" onclick="downloadApp('ios')" tabindex="0">
+                    <div class="app-icon">📱</div>
+                    <div>
+                        <div style="font-size: 0.9rem; opacity: 0.8;">Download on</div>
+                        <div style="font-size: 1.2rem; font-weight: 600;">App Store</div>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer" id="contact">
+        <div class="footer-content">
+            <h3>Ready to Transform Your Fitness Journey?</h3>
+            <p>Join thousands of athletes who are already optimizing their performance with KAVLO Smart Headband.</p>
+            <a href="#download" class="btn btn-primary">Order Now - $99</a>
+            <div class="footer-bottom">
+                <p>&copy; 2025 Kalma Team. All rights reserved. | Privacy Policy | Terms of Service</p>
+            </div>
+        </div>
+    </footer>
+
+    <div class="chatbot-container" id="chatbotContainer">
+        <div class="chatbot-button" id="chatbotButton" tabindex="0" role="button" aria-label="Open chat assistant">
+            <div class="chat-icon">💬</div>
+        </div>
+        
+        <div class="chatbot-window" id="chatbotWindow" role="dialog" aria-labelledby="chatbot-title">
+            <div class="chatbot-header">
+                <div class="chatbot-title" id="chatbot-title">
+                    <div class="bot-avatar">🤖</div>
+                    <div>
+                        <div style="font-weight: 600;">KAVLO Assistant</div>
+                        <div style="font-size: 0.85rem; opacity: 0.7;">AI-powered support</div>
+                    </div>
+                </div>
+                <button class="close-btn" aria-label="Close chat">×</button>
+            </div>
+            
+            <div class="chatbot-messages" id="chatbotMessages" role="log" aria-live="polite">
+                <div class="message bot-message">
+                    <div class="message-content">
+                        Welcome to KAVLO! I'm here to help you discover how our smart headband can enhance your fitness journey. I can assist with:
+                        <br><br>
+                        • Product features and specifications
+                        <br>• Health tracking capabilities  
+                        <br>• Pricing and availability
+                        <br>• App functionality
+                        <br>• Accessibility features
+                        <br><br>
+                        What would you like to know about KAVLO?
+                    </div>
+                </div>
+            </div>
+            
+            <div class="chatbot-input">
+                <input type="text" placeholder="Ask me anything about KAVLO..." aria-label="Chat input" maxlength="500">
+                <button class="send-btn" aria-label="Send message">
+                    <span class="send-icon">→</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js">
+    </script>
+</body>
+</html>
+            
