@@ -41,9 +41,9 @@ KALMA Smart Headband is an innovative solution developed for Samsung Solve for T
 
 ## 📱 Screenshots
 <p align="center">
-  <img src="548253814_2008913722985735_4836557604457261851_n.jpg" width="200" />
-  <img src="assets/screenshots/metrics.png" width="200" />
-  <img src="assets/screenshots/history.png" width="200" />
+  <img src="546548310_1481205046432674_2694086336126700254_n.jpg" width="200" />
+  <img src="546443653_4158714477704617_1254143330320904460_n.jpg" width="200" />
+  <img src="546226779_1283478446411962_2068408120638728328_n.jpg" width="200" />
 </p>
 
 ## 📋 Prerequisites
