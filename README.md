@@ -1,7 +1,7 @@
 # KALMA Smart Headband
 
 <p align="center">
-  <img src="assets/images/kalma-logo.png" alt="KALMA Logo" width="200"/>
+  <img src="kalma-logo.png" alt="KALMA Logo" width="200"/>
 </p>
 
 ## 🎯 Project Overview
