@@ -1750,11 +1750,14 @@ fun ModernHistoryScreen(
             HistoryEntry("Today", "SpO2: 98%", "12:00 PM", Icons.Default.Air, theme.secondaryColor),
             HistoryEntry("Today", "Exercise: 30 min", "11:30 AM", Icons.Default.DirectionsRun, theme.accentColor),
             HistoryEntry("Today", "Stress: Low", "10:00 AM", Icons.Default.Psychology, theme.secondaryColor),
-            HistoryEntry("Yesterday", "Heart Rate: 75 BPM", "8:00 PM", Icons.Default.Favorite, theme.primaryColor),
-            HistoryEntry("Yesterday", "Temperature: 36.8°C", "7:30 PM", Icons.Default.Thermostat, Color(0xFFEF4444)),
-            HistoryEntry("Yesterday", "Exercise: 45 min", "6:00 PM", Icons.Default.DirectionsRun, theme.accentColor),
-            HistoryEntry("2 days ago", "Heart Rate: 68 BPM", "9:00 AM", Icons.Default.Favorite, theme.primaryColor),
-            HistoryEntry("2 days ago", "SpO2: 97%", "8:30 AM", Icons.Default.Air, theme.secondaryColor),
+            HistoryEntry("Yesterday", "Heart Rate: 92 BPM", "13:30 PM", Icons.Default.Favorite, theme.primaryColor),
+            HistoryEntry("Yesterday", "SpO2: 98%", "12:00 PM", Icons.Default.Air, theme.secondaryColor),
+            HistoryEntry("Yesterday", "Exercise: 30 min", "11:30 AM", Icons.Default.DirectionsRun, theme.accentColor),
+            HistoryEntry("Yesterday", "Stress: Low", "10:00 AM", Icons.Default.Psychology, theme.secondaryColor),
+            HistoryEntry("2 Days Ago", "Heart Rate: 86 BPM", "11:30 PM", Icons.Default.Favorite, theme.primaryColor),
+            HistoryEntry("2 Days Ago", "SpO2: 98%", "12:00 PM", Icons.Default.Air, theme.secondaryColor),
+            HistoryEntry("2 Days Ago", "Exercise: 30 min", "11:30 AM", Icons.Default.DirectionsRun, theme.accentColor),
+            HistoryEntry("2 Days Ago", "Stress: Low", "10:00 AM", Icons.Default.Psychology, theme.secondaryColor),
         )
     }
 
