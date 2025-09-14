@@ -1,11 +1,11 @@
-# KALMA Smart Headband
+# KAVLO Smart Headband
 
 <p align="center">
   <img src="kalma-logo.png" alt="KALMA Logo" width="200"/>
 </p>
 
 ## 🎯 About
-KALMA Smart Headband is an innovative solution developed for Samsung Solve for Tomorrow 2025. This project combines IoT and AI technology to monitor user fatigue levels through a smart headband device.
+KAVLO Smart Headband is an innovative solution developed for Samsung Solve for Tomorrow 2025. This project combines IoT and AI technology to monitor user fatigue levels through a smart headband device.
 
 ## ✨ Features
 - 📱 **Modern UI with Jetpack Compose**
