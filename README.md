@@ -4,34 +4,34 @@
   <img src="kalma-logo.png" alt="KALMA Logo" width="200"/>
 </p>
 
-## 🎯 Project Overview
-KALMA Smart Headband adalah solusi inovatif yang dikembangkan untuk Samsung Solve for Tomorrow 2025. Proyek ini menggabungkan teknologi IoT dan AI untuk memantau tingkat kelelahan (fatigue level) pengguna melalui headband pintar.
+## 🎯 About
+KALMA Smart Headband is an innovative solution developed for Samsung Solve for Tomorrow 2025. This project combines IoT and AI technology to monitor user fatigue levels through a smart headband device.
 
 ## ✨ Features
-- 📱 **Modern UI dengan Jetpack Compose**
-  - Dashboard yang intuitif
-  - Tampilan real-time sensor data
-  - Riwayat aktivitas
-  - Kustomisasi tema
+- 📱 **Modern UI with Jetpack Compose**
+  - Intuitive dashboard
+  - Real-time sensor data display
+  - Activity history
+  - Theme customization
 
-- 🔍 **Monitoring Kesehatan**
+- 🔍 **Health Monitoring**
   - Heart Rate
   - SpO2 Level
   - Temperature
   - Stress Level
-  - Fatigue Analysis dengan AI
+  - AI-powered Fatigue Analysis
 
-- 🤖 **AI-Powered Analysis**
-  - TensorFlow Lite integration
-  - Real-time fatigue level detection
-  - Prediksi tingkat kelelahan
-  - Notifikasi peringatan
+- 🤖 **AI Integration**
+  - TensorFlow Lite implementation
+  - Real-time fatigue detection
+  - Fatigue level prediction
+  - Smart alerts & notifications
 
-- 📡 **Konektivitas**
+- 📡 **Connectivity**
   - Bluetooth Low Energy
-  - Auto-reconnect
+  - Auto-reconnect capability
   - Optimized data transfer
-  - Real-time sync
+  - Real-time synchronization
 
 ## 🛠 Tech Stack
 - **Frontend**: Kotlin, Jetpack Compose
@@ -54,33 +54,34 @@ KALMA Smart Headband adalah solusi inovatif yang dikembangkan untuk Samsung Solv
 - KALMA Smart Headband Hardware
 
 ## 🚀 Getting Started
-1. Clone repository:
+1. Clone the repository:
 ```bash
 git clone https://github.com/LixUb/All-In-One.git
 ```
 
-2. Open project di Android Studio
+2. Open project in Android Studio
 
 3. Sync gradle dependencies
 
-4. Run di device atau emulator
+4. Run on device or emulator
 
 ## 📖 Documentation
-Dokumentasi lengkap dapat ditemukan di [Wiki](https://github.com/LixUb/All-In-One/wiki)
+Complete documentation can be found in our [Wiki](https://github.com/LixUb/All-In-One/wiki)
 
 ## 🤝 Contributing
-Kontribusi selalu diterima! Silakan baca [CONTRIBUTING.md](CONTRIBUTING.md) untuk detail lebih lanjut.
+Contributions are always welcome! Please read [CONTRIBUTING.md](CONTRIBUTING.md) for details.
 
 ## 📄 License
-Project ini dilisensikan di bawah MIT License - lihat file [LICENSE](LICENSE) untuk detail.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ## 👥 Team
-- Backend & IoT Developer - [LixUb](https://github.com/LixUb)
-- UI/UX Designer - [Designer Name](https://github.com/username)
-- ML Engineer - [Engineer Name](https://github.com/username)
+- Backend & IoT Developer - [Rayhan Nulhafiz](https://github.com/LixUb)
+- UI/UX Designer - [Senna Farras Hazim](https://github.com/GeneralFrosa)
+- Concept Paper - [Abdurahman Yusuf](https://github.com/Abduudu)
+- ML Engineer - [Muhammad Rifqi Athaullah](https://github.com/Ripslinger9)
 
 ## 🙏 Acknowledgments
-- Samsung Solve for Tomorrow 2025
+- [Samsung Solve for Tomorrow 2025](https://www.samsung.com/id/solvefortomorrow/)
 - [TensorFlow](https://www.tensorflow.org/)
 - [Android Jetpack](https://developer.android.com/jetpack)
 - [ESP32](https://www.espressif.com/)
