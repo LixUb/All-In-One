@@ -3,7 +3,7 @@
 Thank you for your interest in contributing to the KALMA Smart Headband project! We welcome contributions from everyone and are grateful for even the smallest of improvements!
 
 ## 📝 Code of Conduct
-By participating in this project, you are expected to uphold our Code of Conduct. Please report unacceptable behavior to [Rayhan Nulhafiz](hfzrayy@gmail.com).
+By participating in this project, you are expected to uphold our Code of Conduct. Please report unacceptable behavior to [Rayhan Nulhafiz](mailto:hfzrayy@gmail.com).
 
 ## 🚀 How to Contribute
 
@@ -98,6 +98,6 @@ We love new ideas! Please provide:
 ## 🤝 Contact
 - Join our [Discord server](discord-link)
 - Follow us on [Twitter](twitter-link)
-- Email the maintainers at [maintainer@email.com](mailto:maintainer@email.com)
+- Email the maintainers at [hfzrayy@gmail.com](mailto:hfzrayy@gmail.com)
 
 Thank you for contributing to KALMA Smart Headband! 🙏
