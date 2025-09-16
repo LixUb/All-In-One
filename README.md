@@ -33,11 +33,9 @@ KAVLO Smart Headband is an innovative solution developed for Samsung Solve for T
   - Optimized data transfer
   - Real-time synchronization
 
-## 🎥 Demo Video
+## 🎥 Pitching Video
 
 [![Watch the Video on YouTube](https://img.youtube.com/vi/mazTvVSI3dM/0.jpg)](https://youtu.be/mazTvVSI3dM)
-
-Or click this link: [https://youtu.be/mazTvVSI3dM](https://youtu.be/mazTvVSI3dM)
 
 ## 🛠 Tech Stack
 - **Frontend**: Kotlin, Jetpack Compose
