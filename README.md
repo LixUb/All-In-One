@@ -5,7 +5,7 @@
 </p>
 
 ## 🎯 About
-KAVLO Smart Headband is an innovative solution developed for Samsung Solve for Tomorrow 2025. This project combines IoT and AI technology to monitor user fatigue levels through a smart headband device.
+KAVLO Smart Headband is an innovative solution developed for Samsung Solve for Tomorrow 2025. This project combines IoT and AI technology to monitor user fatigue levels through a smart headband device, providing real-time health insights and actionable recommendations.
 
 ## ✨ Features
 - 📱 **Modern UI with Jetpack Compose**
@@ -32,6 +32,12 @@ KAVLO Smart Headband is an innovative solution developed for Samsung Solve for T
   - Auto-reconnect capability
   - Optimized data transfer
   - Real-time synchronization
+
+## 🎥 Demo Video
+
+[![Watch the Video on YouTube](https://img.youtube.com/vi/mazTvVSI3dM/0.jpg)](https://youtu.be/mazTvVSI3dM)
+
+Or click this link: [https://youtu.be/mazTvVSI3dM](https://youtu.be/mazTvVSI3dM)
 
 ## 🛠 Tech Stack
 - **Frontend**: Kotlin, Jetpack Compose
